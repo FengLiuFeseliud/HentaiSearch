@@ -33,7 +33,7 @@ class HentaiSearchMode:
 
     def __init__(self) -> None:
         self.mainLoop = asyncio.get_event_loop()
-        self._config_path = "%s/.config/hentaiSearch/config.yaml" % os.path.expanduser("~")
+        self._config_path = os.path.join(os.path.expanduser("~"), ".config/hentaiSearch/config.yaml")
         self._config = self.get_config()
         self.__createMode = createMode(self.mainLoop, self._config)
         self.modes = self.get_modes()
@@ -59,12 +59,12 @@ class HentaiSearchMode:
             logging.warning(f"没有配置文件自动生成 path: {self._config_path}")
 
             plat = platform.system().lower()
-            if plat == 'windows':
+            if plat == 'indows':
                 editor = "notepad"
             else:
                 editor = "vim"
 
-            config = CONFIG.format(editor)
+            config = CONFIG.format(editor=editor)
             self._open_file(self._config_path, mode="w", data=config)
             return yaml.safe_load(config)
     
