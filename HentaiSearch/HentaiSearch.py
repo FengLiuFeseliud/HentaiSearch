@@ -59,7 +59,7 @@ class HentaiSearchMode:
             logging.warning(f"没有配置文件自动生成 path: {self._config_path}")
 
             plat = platform.system().lower()
-            if plat == 'indows':
+            if plat == 'windows':
                 editor = "notepad"
             else:
                 editor = "vim"
