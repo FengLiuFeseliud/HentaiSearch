@@ -22,6 +22,10 @@ python3 ./HentaiSearch/main.py
 
 也可以在 HentaiSearch 中选择`设置`将直接打开配置文件, 保存后 HentaiSearch 使用新配置
 
+## 混合搜索
+
+选择`全部搜索` HentaiSearch 将搜索所有支持站点
+
 ## 多 url 下载
 
 支持 HentaiSearch 支持站点的资源页混合下载
