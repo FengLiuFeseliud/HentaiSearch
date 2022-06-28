@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 from typing import Any
 import aiofiles
 import os
@@ -48,22 +49,34 @@ class Kemono(Mode):
     def get_creators_url(self, creators_data: dict[str, Any]) -> str:
         type_, id_ = creators_data["service"], creators_data["id"]
         return f"https://kemono.party/{type_}/user/{id_}"
+    
+    async def get_kemono_search_json(self):
+        api = "https://kemono.party/api/creators"
+        creators_list = await self.http.get(api, json=True)
+        if creators_list is None:
+            return
+
+        async with aiofiles.open(self._file_kemono_path, "w") as file:
+            await file.write(json.dumps(creators_list))
+        
+        return creators_list
 
     async def search_creators(self, search_name: str) -> list[dict[str, Any]]:
-        api = "https://kemono.party/api/creators"
-
+        creators_list = []
         if not os.path.isfile(self._file_kemono_path):
-            os.mknod(self._file_kemono_path)
-
-        file_update_time = os.path.getmtime(self._file_kemono_path)
-        if time() > file_update_time + 86400:
-            creators_list = await self.http.get(api, json=True)
-            async with aiofiles.open(self._file_kemono_path, "w") as file:
-                await file.write(json.dumps(creators_list))
-
+            creators_list = await self.get_kemono_search_json()
         else:
+            file_update_time = os.path.getmtime(self._file_kemono_path)
+            if time() > file_update_time + 86400:
+                creators_list = await self.get_kemono_search_json()
+
+        if creators_list is None:
+            logging.error("获取 kemono 搜索 json 失败, 请检查网络设置")
+            return
+
+        if not creators_list:
             async with aiofiles.open(self._file_kemono_path, "r") as file:
-                creators_list = eval(await file.read())
+                creators_list = json.loads(await file.read())
         
         creators_data_list: list[dict[str, Any]] = []
         for creators in creators_list:

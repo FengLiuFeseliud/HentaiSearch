@@ -1,6 +1,8 @@
-import os
 from typing import Any, Callable, Union, Optional
 import logging
+
+
+COMMIT_DICT: dict[str, Callable[[], None]] = {}
 
 
 class Log:
@@ -39,9 +41,9 @@ def _select(list_: Union[list, dict], callable: Optional[Callable[[Any], str]]=N
                 exit_func()
 
             break
-        
-        if str_ in ["c", "clear"]:
-            os.system("clear")
+
+        if str_ in COMMIT_DICT:
+            COMMIT_DICT[str_]()
             continue
         
         try:
